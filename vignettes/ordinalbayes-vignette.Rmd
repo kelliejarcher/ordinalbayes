@@ -1,0 +1,169 @@
+---
+title: "ordinalbayes: Bayesian Ordinal Regression for High-Dimensional Data"
+author: "Kellie J. Archer, Anna Eames Seffernick, Shuai Sun, Yiran Zhang"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ordinalbayes: Bayesian Ordinal Regression for High-Dimensional Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+The `ordinalbayes` R package was developed for fitting ordinal Bayesian models when there is a high-dimensional covariate space, such as when high-throughput genomic data are used in modeling the ordinal outcome. This package depends on the `runjags` R package and JAGS (version >=4.x.x) must be installed as well. See the [JAGS](https://sourceforge.net/projects/mcmc-jags/) and [runjags] (https://CRAN.R-project.org/package=runjags) for installation instructions. The package includes the function `ordinalbayes` which can be used to fit LASSO (`model = "lasso"`), normal spike-and-slab (`model = "normalss"`), double exponential spike-and-slab (`model = "dess"`), and regression-based variable inclusion indicator Bayesian models (`model = "regressvi"`).  Variable selection can be performed using Bayes factor or using the posterior distributions of the variable inclusion indicators directly. This vignette describes the syntax required for each of our Bayesian models.
+
+```{r setup}
+library(ordinalbayes)
+```
+
+The package includes a two subsets of The Cancer Genome Atlas Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma (TCGA-CESC) dataset: `finalSet` includes 2,009 transcripts while `reducedSet` includes 41 transcripts. Both datasets include the same set of subjects who belong to FIGO stages I ($N=124$), II ($N=61$), and III-IV ($N=57$). To shorten run time, all illustrations will use `reducedSet`. Both were created using the BioConductor `DESeq2` package. 
+
+```{r}
+library("DESeq2")
+reducedSet
+```
+
+The primary function for model fitting in the `ordinalbayes` package is `ordinalbayes`. The function arguments are
+
+```{r args}
+args(ordinalbayes)
+```
+
+When analyzing data processed using the `DESeq2` Bioconductor package, the genomic feature object is of class `DESeqTransform` which is a `SummarizedExperiment`, and therefore the phenotypic data are accessed using the `colData` extractor function
+
+```{r colData}
+head(colData(reducedSet))
+```
+
+The gene expression data are accessed using `assay` extractor function.
+
+```{r assay}
+head(assay(reducedSet))[,1:2]
+```
+
+The `ordinalbayes` function accepts a model `formula` that specifies the ordinal outcome on the left-hand side of the equation and any unpenalized predictor variable(s) from the phenotypic dataset on the right-hand side of the $\sim$ equation; if no unpenalized predictor variables are included, the model formula includes 1 (the intercept) on the right-hand side of the equation. Unpenalized predictors are those that we want to coerce into the model (e.g., age) so that no penalty is applied. When unpenalized predictors are included (or coerced) into the model, the user can specify the variance associated with those model parameters (default `coerce.var=10`). 
+
+For example, this call fits a regression-based variable inclusion indicator Bayesian model to predict the ordinal outcome `Stage` where `cigarettes_per_day+age_at_index` and `age_at_index` are included as unpenalized predictors (coerced into the model) and the expression of 41 genes are included as penalized predictors. For `SummarizedExperiment` objects like this one created by `DESeq2`, the user should pass to `x` the genomic feature data (e.g., expression of genes from high-throughput assays) to be penalized in the fitted model, which can be accessed using the `assay` extractor function. Note that the number of rows in both `data` and `x` should be the same, such that the transpose of `assay` should be supplied to `x`.  Here a fixed constant prior for $\pi_j$ is set to 0.05.  To shorten run time for demonstration purposes, we reduced the number of iterations for adaptation (`adaptSteps`), the number of iterations of the Markov chain to run (`burnInSteps`), and the number of saved steps per chain (`numSavedSteps`) for all examples.
+
+```{r, model}
+fit<-ordinalbayes(Stage~cigarettes_per_day+age_at_index, data=colData(reducedSet),x=t(assay(reducedSet)), model="regressvi", gamma.ind="fixed", pi.fixed=0.05, adaptSteps=500, burnInSteps=500,  numSavedSteps=999)
+```
+
+By default the genomic features are centered (`center=TRUE`) and scaled (`scale=TRUE`) and three chains are run (`nChains`). The user can `subset` the data set prior to model fitting, for example, `subset=(race=="white")`. When analyzing data processed using packages that structure the genomic feature object as a `Biobase` `ExpressionSet`, the phenotypic data are accessed using `pData` extractor function while the genomic features to be penalized can be accessed using the `exprs` extractor function. Again, the number of rows in both `data` and `x` should be the same, such that the transpose of `exprs` should be supplied to `x`. Therefore, in the `ordinalbayes` call, `data` should ideally be `colData` or `pData` calls to the genomic feature object, though a `data.frame` name can be passed. Note that when passing a `data.frame` to `data` that is not connected to the penalized variables (`x`), the user needs to carefully verify that the observations in the `x` matrix are appropriately aligned to the phenotypic data. 
+
+## LASSO Ordinal Model
+The LASSO Bayesian ordinal model can be fit by specifying `model="lasso"` which assumes the penalized coefficients $\beta_j$ for $j=1,\ldots,P$ are from independent Laplace (or double exponential) distributions with parameter $\lambda$ which is from a Gamma distribution with parameters `a` and `b`. The default parameters are `a=0.01` and `b=0.01`. 
+
+```{r, lasso, eval=FALSE}
+fit.lasso<-ordinalbayes(Stage~cigarettes_per_day+age_at_index, data=colData(reducedSet),x=t(assay(reducedSet)), model="lasso", adaptSteps=500, burnInSteps=500,  numSavedSteps=999)
+```
+
+## Regression-Based Variable Inclusion Indicator Ordinal Model
+Like the LASSO model, the regression-based variable inclusion indicator model assumes the penalized coefficients $\beta_j$ for $j=1,\ldots,P$ are from independent Laplace (or double exponential) distributions with parameter $\lambda$ which is from a Gamma distribution with parameters `a` and `b`. Additionally, a variable inclusion indicator $\gamma_j$ is assumed to follow a Bernoulli distribution with parameter $\pi_j$.  The user can use either a fixed (`gamma.ind="fixed"`) or random (`gamma.ind="random"`) prior for  $\pi_j$. When `gamma.ind="fixed"`, the user can specify `pi.fixed` as the constant prior to be some value the (0, 1) interval (default is 0.05). Here there are no unpenalized covariates included in the model so the right-hand side of the model formula is 1.
+
+```{r, rvifixed, eval=FALSE}
+fit.regressvi.fixed<-ordinalbayes(Stage~1, data=colData(reducedSet),x=t(assay(reducedSet)), model="regressvi", gamma.ind="fixed", pi.fixed=0.05, adaptSteps=500, burnInSteps=500,  numSavedSteps=999)
+```
+
+When `gamma.ind="random"`, the user must specify parameter values for the Beta distribution `c.gamma` (e.g., 0.01) and `d.gamma` (e.g. 0.19).
+
+```{r, rvirandom, eval=FALSE}
+fit.regressvi.random<-ordinalbayes(Stage~1, data=colData(reducedSet),x=t(assay(reducedSet)), model="regressvi", gamma.ind="random", c.gamma=0.01, d.gamma=0.19, adaptSteps=500, burnInSteps=500,  numSavedSteps=999)
+```
+
+## Normal Spike-and-Slab Ordinal Model
+The normal spike-and-slab Bayesian ordinal model can be fit by specifying `model="normalss"`. When fitting this model the user is required to specify the variance for the spike by setting `sigma2.0` to a small positive value (e.g., 0.01) and variance for the slab by setting `sigma2.1` to a large positive value (e.g., 10). Additionally, a variable inclusion indicator $\gamma_j$ is assumed to follow a Bernoulli distribution with parameter $\pi_j$.  The user can use either a fixed (`gamma.ind="fixed"`) or random (`gamma.ind="random"`) prior for  $\pi_j$. When `gamma.ind="fixed"`, the user can specify `pi.fixed` as the constant prior to be some value the (0, 1) interval (default is 0.05). Here there are no unpenalized covariates included in the model so the right-hand side of the model formula is 1.
+
+```{r, nssfixed, eval=FALSE}
+fit.normalss.fixed<-ordinalbayes(Stage~1, data=colData(reducedSet),x=t(assay(reducedSet)), model="normalss", gamma.ind="fixed", pi.fixed = 0.05, sigma2.0=0.01, sigma2.1=10, adaptSteps=500, burnInSteps=500,  numSavedSteps=999)
+```
+
+When `gamma.ind="random"`, the user must specify parameter values for the Beta distribution `c.gamma` (e.g., 0.01) and `d.gamma` (e.g. 0.19).
+
+```{r, nssrandom, eval=FALSE}
+fitted.normalss.random<-ordinalbayes(Stage~1, data=colData(reducedSet),x=t(assay(reducedSet)), model="normalss", gamma.ind="random", c.gamma = 0.01, d.gamma=0.19, sigma2.0=0.01, sigma2.1=10, adaptSteps=500, burnInSteps=500,  numSavedSteps=999)
+```
+
+## Double Exponential Spike-and-Slab Ordinal Model
+The double exponential spike-and-slab ordinal model can be fit by specifying `model="dess"`. Like LASSO and , the slab is taken to be a double exponential distribution with parameter $\lambda$ which follows a Gamma distribution with parameters `a` and `b`. When fitting this model the user is required to specify the parameter for the spike ($\lambda_0$) using `lambda0` (e.g., 20). Additionally, a variable inclusion indicator $\gamma_j$ is assumed to follow a Bernoulli distribution with parameter $\pi_j$.  The user can use either a fixed (`gamma.ind="fixed"`) or random (`gamma.ind="random"`) prior for  $\pi_j$. When `gamma.ind="fixed"`, the user can specify `pi.fixed` as the constant prior to be some value the (0, 1) interval (default is 0.05). Here there are no unpenalized covariates included in the model so the right-hand side of the model formula is 1.
+
+```{r, dessfixed, eval=FALSE}
+fit.dess.fixed<-ordinalbayes(Stage~1, data=colData(reducedSet),x=t(assay(reducedSet)), model="dess", gamma.ind="fixed", pi.fixed = 0.05, lambda0=20, adaptSteps=500, burnInSteps=500,  numSavedSteps=999)
+```
+
+When `gamma.ind="random"`, the user must specify parameter values for the Beta distribution `c.gamma` (e.g., 0.01) and `d.gamma` (e.g. 0.19).
+
+```{r dessrandom, eval=FALSE}
+fit.dess.random<-ordinalbayes(Stage~1, data=colData(reducedSet),x=t(assay(reducedSet)), model="dess", gamma.ind="random", c.gamma = 0.01, d.gamma=0.19, lambda0=20, adaptSteps=500, burnInSteps=500,  numSavedSteps=999)
+```
+
+## Other Package Functions
+Generic functions for the resulting `ordinalbayes` object are available for extracting meaningful results from the resulting MCMC chain. The `print` function returns several summaries from the MCMC output for each parameter monitored including:  the 95th lower confidence limit for the highest posterior density (HPD) credible interval (Lower95), the median value (Median),  the 95th upper confidence limit for the HPD credible interval (Upper95), the mean value (Mean), the sample standard deviation (SD), the mode of the variable (Mode), the Monte Carlo standard error (MCerr,)  percent of SD due to MCMC (MC\%ofSD), effective sample size (SSeff),  autocorrelation at a lag of 30 (AC.30), and the potential scale reduction factor (psrf).
+
+```{r print}
+head(print(fit))
+```
+
+The `summary` function provides the following output: 
+* `alphamatrix`, the MCMC output for the threshold parameters; 
+* `betamatrix`, the MCMC output for the penalized parameters; * `zetamatrix`, The MCMC output for the unpenalized parameters (if included); 
+* `gammamatrix`, the MCMC output for the variable inclusion parameters (not available when `model = "lasso"`);  
+* `gammamean`, the posterior mean of the variable inclusion indicators (not available when `model = "lasso"`); 
+* `gamma.BayesFactor`, Bayes factor for the variable inclusion indicators (not available when `model = "lasso"`); 
+* `Beta.BayesFactor`, Bayes factor for the penalized parameters; and 
+* `lambdamatrix`, the MCMC output for the penalty parameter (not available when `model="normalss"`). 
+
+```{r summary}
+summary.fit<-summary(fit)
+names(summary.fit)
+head(summary.fit$gammamatrix)
+```
+
+To identify which penalized features using Bayes factor at a given threshold (e.g., 5):
+
+```{r usesummary}
+names(which(summary.fit$Beta.BayesFactor>5))
+```
+
+or
+```{r usesummary2}
+names(which(summary.fit$gamma.BayesFactor>5))
+```
+
+Alternatively, a threshold for $\bar{\gamma}_j$ could be used for variable selection.
+
+```{r usesummary3}
+names(which(summary.fit$gammamean>0.5))
+```
+
+```{r coef}
+coefficients<-coef(fit)
+coefficients$gamma[which(summary.fit$gamma.BayesFactor>5)]
+coefficients$gamma[which(summary.fit$Beta.BayesFactor>5)]
+```
+
+To obtain model predictions,
+
+```{r pred}
+phat<-predict(fit)
+table(phat$class, colData(finalSet)$Stage)
+```
+
+The `plot` function provides a trace of the sampled output and optionally the density estimate for each variable in the chain. This function additionally adds the appropriate `beta` and `gamma` labels for each penalized variable name.
+
+```{r plot, eval=FALSE}
+plot(fit)
+```
+
+
+
+# References
+1. Zhang, Y.; Archer, K.J. Bayesian variable selection for high-dimensional data with an ordinal response: identifying genes associated with prognostic risk group in acute myeloid leukemia. *BMC Bioinformatics* 2021, 22, 539.
+2. Zhang, Y.; Archer, K.J. Bayesian penalized cumulative logit model for high-dimensional data with an ordinal response. *Statistics in Medicine* 2021, 40, 1453–1481.

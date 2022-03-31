@@ -1,0 +1,55 @@
+citHeader("To cite the ordinalbayes package in publications use:")
+
+note <- sprintf("R package version %s", meta$Version)
+
+citEntry(entry = "misc",
+         title = "ordinalbayes: Bayesian Ordinal Regression for High-Dimensional Data",
+         author = c(person("Kellie", "J",  "Archer"),
+                    person("Anna", "Eames", "Seffernick"),
+                    person("Shuai", "Sun"),
+                    person("Yiran", "Zhang")),
+         year = 2022,
+         note = note,
+         url = "https://CRAN.R-project.org/package=ordinalbayes",
+
+         textVersion =
+         paste("Kellie J Archer, Anna Eames Seffernick, Shuai Sun, Yiran Zhang (2022).",
+        "ordinalbayes: Bayesian Ordinal Regression for High-Dimensional Data.",
+        note,
+        "URL https://CRAN.R-project.org/package=ordinalbayes.")
+         )
+
+citEntry(entry = "Article",
+         title = "Bayesian penalized cumulative logit model for high-dimensional data with an ordinal response",
+         author = personList(as.person("Yiran Zhang"),
+                    as.person("Kellie J Archer")),
+         year = "2021",
+         journal = "Statistics in Medicine",
+         volume = "40",
+         pages = "1453--1481",
+         url = "https://pubmed.ncbi.nlm.nih.gov/33336826/",
+
+         textVersion  =
+  paste("Yiran Zhang, Kellie J Archer (2021).",
+        "Bayesian penalized cumulative logit model for high-dimensional data with an ordinal response.",
+        "Statistics in Medicine, 40, 1453-1481.",
+        "URL https://pubmed.ncbi.nlm.nih.gov/33336826/")
+)
+
+citEntry(entry = "Article",
+         title = "Bayesian variable selection for high-dimensional data with an ordinal response: identifying genes associated with prognostic risk group in acute myeloid leukemia",
+         author = personList(as.person("Yiran Zhang"),
+                    as.person("Kellie J Archer")),
+         year = "2021",
+       	 journal = "BMC Bioinformatics",
+       	 volume	= "22",
+         number = "1",
+       	 pages = "539",
+       	 url = "https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-021-04432-w",
+
+          textVersion  =
+  paste("Yiran Zhang, Kellie J Archer (2021).",
+        "Bayesian variable selection for high-dimensional data with an ordinal response: identifying genes associated with prognostic risk group in acute myeloid leukemia.",
+        "BMC Bioinformatics, 22(1), 539.",
+        "URL https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-021-04432-.")
+       	 )
