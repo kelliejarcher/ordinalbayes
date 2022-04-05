@@ -21,11 +21,4 @@ reducedSet
 This subset includes 41 transcripts and four phenotypic variables for
 242 subjects with squamous cell cervical cancer.
 }
-\examples{
-\donttest{
-library(DESeq2)
-data(reducedSet)
-head(colData(reducedSet))
-}
-}
 \keyword{datasets}

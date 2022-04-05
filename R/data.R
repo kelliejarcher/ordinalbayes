@@ -9,14 +9,6 @@
 #'   \item{colData}{includes phenotypic data: \code{age_at_index}, \code{cigarettes_per_day}, \code{race}, and \code{Stage}}
 #' }
 #' @source TCGAbiolinks TCGA-CESC
-#' @examples
-#' \dontrun{
-#' library(DESeq2)
-#' data(finalSet)
-#' names(colData(finalSet))
-#' head(colData(finalSet))
-#' head(assay(finalSet)[,1:5])
-#' }
 #' @keywords datasets
 "finalSet"
 
@@ -31,12 +23,6 @@
 #'   \item{colData}{includes phenotypic data: \code{age_at_index}, \code{cigarettes_per_day}, \code{race}, and \code{Stage}}
 #' }
 #' @source TCGAbiolinks TCGA-CESC
-#' @examples
-#' \donttest{
-#' library(DESeq2)
-#' data(reducedSet)
-#' head(colData(reducedSet))
-#' }
 #' @keywords datasets
 "reducedSet"
 

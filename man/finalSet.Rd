@@ -21,13 +21,4 @@ finalSet
 This subset includes 2,009 transcripts and four phenotypic variables for
 242 subjects with squamous cell cervical cancer.
 }
-\examples{
-\dontrun{
-library(DESeq2)
-data(finalSet)
-names(colData(finalSet))
-head(colData(finalSet))
-head(assay(finalSet)[,1:5])
-}
-}
 \keyword{datasets}
