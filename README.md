@@ -6,15 +6,19 @@
 2. Install R https://cran.r-project.org
 3. Install runjags which is hosted on CRAN and 
 http://runjags.sourceforge.net
-4. Install Bioconductor packages
-  <li>a. See https://www.bioconductor.org/install/ to install base Bioconductor packages</li>
-  <li>b. To run examples using finalSet and reducedSet the 
+4. Install Bioconductor packages 
+<ol>
+  a. See https://www.bioconductor.org/install/ to install base Bioconductor packages
+  b. To run examples using finalSet and reducedSet the 
      DESeq2 package is needed. To install run</li>
      > BiocManager::install("DESeq2")
+</ol>
 5. Install ordinalbayes using 
-  <li>a. within R use > install.packages("ordinalbayes")</li>
+<ol>
+  a. within R use > install.packages("ordinalbayes")
       or
-  <li>b. </li>
+  b.
   > devtools::install_github("kelliejarcher/ordinalbayes", build_vignettes = 
-TRUE) 
-   <li>This latter command takes longer because the vignette needs to be built.</li>
+TRUE)
+   This latter command takes longer because the vignette needs to be built.
+  </ol>
