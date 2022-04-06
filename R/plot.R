@@ -8,6 +8,7 @@
 #' @export
 #'
 #' @return No returned value, called for side effects
+#' @method plot ordinalbayes
 #'
 #' @examples
 #' \donttest{

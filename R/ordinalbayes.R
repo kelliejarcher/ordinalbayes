@@ -62,6 +62,7 @@
 #' @keywords models
 #' @keywords regression
 #' @importFrom stats model.matrix model.response rnorm
+#' @import dclone
 ordinalbayes <-
   function(formula, data, x = NULL, subset, center=TRUE, scale=TRUE, a=0.1, b=0.1, model="regressvi", gamma.ind="fixed", pi.fixed=0.05, c.gamma=NULL, d.gamma=NULL, alpha.var=10,
            sigma2.0=NULL, sigma2.1=NULL, coerce.var=10, lambda0=NULL, nChains=3, adaptSteps=5000, burnInSteps=5000,  numSavedSteps=9999, thinSteps=3, parallel=TRUE, seed=NULL, quiet=FALSE) {

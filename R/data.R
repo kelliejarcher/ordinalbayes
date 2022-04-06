@@ -9,6 +9,8 @@
 #'   \item{colData}{includes phenotypic data: \code{age_at_index}, \code{cigarettes_per_day}, \code{race}, and \code{Stage}}
 #' }
 #' @source TCGAbiolinks TCGA-CESC
+#' @import DESeq2
+#' @import SummarizedExperiment
 #' @keywords datasets
 "finalSet"
 
@@ -23,6 +25,8 @@
 #'   \item{colData}{includes phenotypic data: \code{age_at_index}, \code{cigarettes_per_day}, \code{race}, and \code{Stage}}
 #' }
 #' @source TCGAbiolinks TCGA-CESC
+#' @import DESeq2
+#' @import SummarizedExperiment
 #' @keywords datasets
 "reducedSet"
 

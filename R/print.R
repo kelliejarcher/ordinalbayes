@@ -17,6 +17,7 @@
 #' burnInSteps=1000, nChains=2, numSavedSteps=2000, thinSteps=2)
 #' print(fit)
 #' }
+#' @method print ordinalbayes
 print.ordinalbayes<-function(x, ...) {
   res <- x$results$summaries
   print(res)

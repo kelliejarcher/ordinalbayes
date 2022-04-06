@@ -13,7 +13,9 @@ Description: Provides a function for fitting various penalized Bayesian
     Zhang and Archer (2021) <doi:10.1186/s12859-021-04432-w>.
 License: MIT + file LICENSE
 Depends: 
-    R (>= 2.10)
+    DESeq2,
+    R (>= 2.10),
+    SummarizedExperiment
 Imports: 
     coda,
     devtools,
@@ -23,9 +25,7 @@ Suggests:
     knitr,
     Biobase,
     testthat (>= 3.0.0),
-    rmarkdown,
-    DESeq2,
-    SummarizedExperiment
+    rmarkdown
 Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true

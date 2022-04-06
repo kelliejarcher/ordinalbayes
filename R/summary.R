@@ -30,6 +30,7 @@
 #' names(which(summary.fit$gamma.BayesFactor>5))
 #' }
 #' @importFrom stats pnorm
+#' @method summary ordinalbayes
 summary.ordinalbayes <-
   function(object, epsilon=0.1, ...) {
     a<-object$a

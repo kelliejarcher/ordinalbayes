@@ -16,6 +16,7 @@
 #'
 #' @seealso \code{\link{ordinalbayes}}, \code{\link{coef.ordinalbayes}}, \code{\link{summary.ordinalbayes}}, \code{\link{print.ordinalbayes}}
 #'
+#' @method predict ordinalbayes
 #' @examples
 #' \donttest{
 #' data("cesc")

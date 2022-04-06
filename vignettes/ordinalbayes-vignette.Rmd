@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 The `ordinalbayes` R package was developed for fitting ordinal Bayesian models when there is a high-dimensional covariate space, such as when high-throughput genomic data are used in modeling the ordinal outcome. This package depends on the `runjags` R package and JAGS (version >=4.x.x) must be installed as well. See the [JAGS](https://sourceforge.net/projects/mcmc-jags/) and [runjags] (https://CRAN.R-project.org/package=runjags) for installation instructions. The package includes the function `ordinalbayes` which can be used to fit LASSO (`model = "lasso"`), normal spike-and-slab (`model = "normalss"`), double exponential spike-and-slab (`model = "dess"`), and regression-based variable inclusion indicator Bayesian models (`model = "regressvi"`).  Variable selection can be performed using Bayes factor or using the posterior distributions of the variable inclusion indicators directly. This vignette describes the syntax required for each of our Bayesian models.
 
 ```{r setup}
-library(ordinalbayes)
+library("ordinalbayes")
 ```
 
 The package includes a two subsets of The Cancer Genome Atlas Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma (TCGA-CESC) dataset: `finalSet` includes 2,009 transcripts while `reducedSet` includes 41 transcripts. Both datasets include the same set of subjects who belong to FIGO stages I ($N=124$), II ($N=61$), and III-IV ($N=57$). Additionally, the `cesc` data.frame is an object that combines the phenotypic and gene expression data into one object. To shorten run time, all illustrations will use `cesc`. 
