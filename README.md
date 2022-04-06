@@ -18,6 +18,6 @@ http://runjags.sourceforge.net
   <li>Within R use > install.packages("ordinalbayes")</li>
       or
  <li> > devtools::install_github("kelliejarcher/ordinalbayes", build_vignettes = 
-TRUE)
-   This latter command takes longer because the vignette needs to be built.</li>
+TRUE)</li>
+   This latter command takes longer because the vignette needs to be built.
   </ol>
