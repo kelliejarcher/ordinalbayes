@@ -21,3 +21,8 @@ http://runjags.sourceforge.net
 TRUE)</li>
    This latter command takes longer because the vignette needs to be built.
   </ol>
+
+## References
+1. Archer KJ, Seffernick AE, Sun, S, Zhang, Y. ordinalbayes: Fitting ordinal Bayesian regression models to high-dimensional data using R. <i>STATS</i>, 5(2), 371-384, 2022.
+2. Zhang Y, Archer KJ. Bayesian variable selection for high-dimensional data with an ordinal response: identifying genes associated with prognostic risk group in acute myeloid leukemia. <i>BMC Bioinformatics</i>, 22:539, 2021.
+3. Zhang Y, Archer KJ. Bayesian penalized cumulative logit model for high-dimensional data with an ordinal response. <i>Statistics in Medicine</ii>, 40:1453-1481, 2021
